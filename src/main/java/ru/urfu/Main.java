@@ -1,6 +1,7 @@
 package ru.urfu;
 
 import lombok.extern.slf4j.Slf4j;
+import ru.urfu.model.Torrent;
 
 @Slf4j
 public class Main {
@@ -8,5 +9,6 @@ public class Main {
         log.info("info");
         log.warn("warn");
         log.error("error");
+
     }
 }
