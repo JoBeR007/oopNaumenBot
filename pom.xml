@@ -20,6 +20,8 @@
         <slf4j.version>2.0.7</slf4j.version>
         <junit.version>4.13.2</junit.version>
         <lombok.version>1.18.28</lombok.version>
+        <jsoup.version>1.14.2</jsoup.version>
+        <tgbot.version>6.9.7.1</tgbot.version>
     </properties>
 
     <dependencyManagement>
@@ -54,6 +56,16 @@
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.telegram</groupId>
+                <artifactId>telegrambots</artifactId>
+                <version>${tgbot.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -77,6 +89,14 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
         </dependency>
     </dependencies>
 </project>
