@@ -30,7 +30,7 @@ public class Torrent {
         this.torrentDownloadLink = torrentDownloadLink;
     }
 
-    public Torrent(String category, String name, String size, int seeders, int leechers, int completed, String url, Date date) {
+    public Torrent(String category, String name, String size, int seeders, int leechers, int completed, String url, Date date, String torrentDownloadLink) {
         this.category = category;
         this.name = name;
         this.size = size;
@@ -39,6 +39,7 @@ public class Torrent {
         this.completed = completed;
         this.url = url;
         this.date = date;
+        this.torrentDownloadLink = torrentDownloadLink;
     }
 
     public String getCategory() {

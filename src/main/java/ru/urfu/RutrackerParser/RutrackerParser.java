@@ -20,7 +20,7 @@ public class RutrackerParser {
     private final RutrackerLogin auth;
 
     private RutrackerParser() {
-        auth = new RutrackerLogin();
+        auth = RutrackerLogin.getInstance();
     }
 
     public static RutrackerParser getInstance() {
@@ -32,7 +32,7 @@ public class RutrackerParser {
     }
 
     public List<Torrent> search(String searchPhrase) {
-        log.info("Searching rutracker for: " + searchPhrase);
+        log.info("Searching rutracker for: {}", searchPhrase);
         Document doc = fetchDocument(RutrackerSettings.SEARCH_URL + searchPhrase);
 
         if (doc != null) {
@@ -43,12 +43,12 @@ public class RutrackerParser {
             }
             return searchResults;
         }
-        log.info("No results for: " + searchPhrase);
+        log.info("No results for: {}", searchPhrase);
         return Collections.emptyList();
     }
 
     public String getMagnet(String torrentUrl) {
-        log.info("Getting magnet for url: " + torrentUrl);
+        log.info("Getting magnet for url: {}", torrentUrl);
         Document doc = fetchDocument(torrentUrl);
 
         if (doc != null) {
@@ -62,29 +62,12 @@ public class RutrackerParser {
                 }
             }
         }
-        log.info("No magnet on url: " + torrentUrl);
-        return "";
-    }
-
-    public String getTorrentFileDownloadLink(String torrentUrl) {
-        log.info("Getting .torrent link for url: " + torrentUrl);
-        Document doc = fetchDocument(torrentUrl);
-
-        if (doc != null) {
-            Elements results = doc.getElementsByClass("row1");
-            Element firstElement = results.select("a.dl-stub.dl-link.dl-topic").first();
-            if (firstElement != null) {
-                String relative = firstElement.attr("href");
-                return RutrackerSettings.TRACKER_URL + relative;
-            }
-        }
-
-        log.info("No .torrent link on url: " + torrentUrl);
+        log.info("No magnet on url: {}", torrentUrl);
         return "";
     }
 
     private Document fetchDocument(String url) {
-        log.info("Fetching document from: " + url);
+        log.info("Fetching document from: {}", url);
         if (!auth.isAuthenticated()) {
             auth.login();
         }
@@ -95,16 +78,16 @@ public class RutrackerParser {
                         .cookies(auth.getCookies())
                         .get();
             } catch (Exception e) {
-                log.warn("Unable to connect to rutracker.org: " + e.getLocalizedMessage());
+                log.warn("Unable to connect to rutracker.org: {}", e.getLocalizedMessage());
             }
         }
 
-        log.info("Unable to fetch document for url: " + url);
+        log.info("Unable to fetch document for url: {}", url);
         return null;
     }
 
     private Torrent extractTorrentFromElement(Element element) {
-        log.info("Extracting Torrent info from Element: " + element.text());
+        log.info("Extracting Torrent info from Element: {}", element.text());
         String category = element.getElementsByClass("gen f ts-text").get(0).text();
         String name = element.getElementsByClass("t-title").get(0).text();
         String sizeText = element.getElementsByClass("small tr-dl dl-stub").get(0)
@@ -126,6 +109,7 @@ public class RutrackerParser {
         String url = RutrackerSettings.TRACKER_URL + element.select("a").get(1).attr("href");
         Date date = new Date(Long.parseLong(element.getElementsByClass("row4 small nowrap")
                 .get(0).attr("data-ts_text")) * 1000);
-        return new Torrent(category, name, sizeText, seeders, leechers, completed, url, date);
+        String torrentDownloadLink = url.replace("viewtopic", "dl");
+        return new Torrent(category, name, sizeText, seeders, leechers, completed, url, date, torrentDownloadLink);
     }
 }
