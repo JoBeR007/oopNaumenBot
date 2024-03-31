@@ -28,7 +28,7 @@ public class TorrentFileDownloader {
     public String downloadTorrentFile(String url, boolean cookiesRequired) {
         log.info("Fetching document from: {}", url);
         try {
-            if(cookiesRequired){
+            if (cookiesRequired) {
                 if (!auth.isAuthenticated()) {
                     auth.login();
                 }
@@ -53,7 +53,8 @@ public class TorrentFileDownloader {
         String ending = cookiesRequired ? ".torrent" : "";
         HttpGet request = new HttpGet(url);
         String name = url.substring(url.lastIndexOf(delim) + 1) + ending;
-        request.addHeader("Cookie", cookiesToString(auth.getCookies()));
+        if(cookiesRequired)
+            request.addHeader("Cookie", cookiesToString(auth.getCookies()));
 
 
         try (CloseableHttpClient client = HttpClients.createDefault();
