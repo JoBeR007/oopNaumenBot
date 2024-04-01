@@ -29,7 +29,7 @@ public class NyaParser {
     }
 
     public List<Torrent> search(String searchPhrase) {
-        log.info("Searching nya for: " + searchPhrase);
+        log.info("Searching nya for: {}", searchPhrase);
         Document doc = fetchDocument(NyaSettings.SEARCH_URL + searchPhrase);
 
         if (doc != null) {
@@ -40,26 +40,26 @@ public class NyaParser {
             }
             return res;
         }
-        log.info("No results for: " + searchPhrase);
+        log.info("No results for: {}", searchPhrase);
         return Collections.emptyList();
     }
 
     private Document fetchDocument(String url) {
-        log.info("Fetching document from: " + url);
+        log.info("Fetching document from: {}", url);
         try {
             return Jsoup.connect(url)
                     .get();
         } catch (Exception e) {
-            log.warn("Unable to connect to rutracker.org: " + e.getLocalizedMessage());
+            log.warn("Unable to connect to nya: {}", e.getLocalizedMessage());
         }
 
 
-        log.info("Unable to fetch document for url: " + url);
+        log.info("Unable to fetch document for url: {}", url);
         return null;
     }
 
     private Torrent extractTorrentFromElement(Element element) {
-        log.info("Extracting Torrent info from Element: " + element.text());
+        log.info("Extracting Torrent info from Element: {}", element.text());
         String category = element.select("a").attr("href");
         String name = element.select("a").get(1).text();
         String sizeText = element.getElementsByClass("text-center").get(1).text();

@@ -19,20 +19,19 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class TorrentFileDownloader {
-    private final RutrackerLogin auth;
+    private RutrackerLogin auth;
 
     public TorrentFileDownloader() {
-        auth = RutrackerLogin.getInstance();
     }
 
     public String downloadTorrentFile(String url, boolean cookiesRequired) {
         log.info("Fetching document from: {}", url);
         try {
             if (cookiesRequired) {
+                auth = RutrackerLogin.getInstance();
                 if (!auth.isAuthenticated()) {
                     auth.login();
                 }
-
                 if (auth.isAuthenticated()) {
                     return downloadUsingHttpClient(url, true);
                 } else {
@@ -43,19 +42,19 @@ public class TorrentFileDownloader {
                 return downloadUsingHttpClient(url, false);
             }
         } catch (IOException e) {
-            log.error("Error downloading torrent file from url: {}", url, e);
+            log.error("Error downloading torrent file from url: {}, msg: {}", url, e.getLocalizedMessage());
             return "";
         }
     }
 
     private String downloadUsingHttpClient(String url, boolean cookiesRequired) throws IOException {
         char delim = cookiesRequired ? '=' : '/';
-        String ending = cookiesRequired ? ".torrent" : "";
+        char prefix = cookiesRequired ? 'r' : 'n';
+        String suffix = cookiesRequired ? ".torrent" : "";
         HttpGet request = new HttpGet(url);
-        String name = url.substring(url.lastIndexOf(delim) + 1) + ending;
+        String name = prefix + url.substring(url.lastIndexOf(delim) + 1) + suffix;
         if(cookiesRequired)
             request.addHeader("Cookie", cookiesToString(auth.getCookies()));
-
 
         try (CloseableHttpClient client = HttpClients.createDefault();
              CloseableHttpResponse response = client.execute(request)) {
@@ -71,6 +70,17 @@ public class TorrentFileDownloader {
             }
         }
         return name;
+    }
+
+    public boolean deleteFileByName(String fileName) {
+        try {
+            Files.deleteIfExists(Paths.get(RutrackerSettings.TORRENTS_PATH + fileName));
+            log.info("File {} deleted successfully", fileName);
+            return true;
+        } catch (IOException e) {
+            log.error("Error deleting file: {}, msg: {}", fileName, e.getLocalizedMessage());
+            return false;
+        }
     }
 
     private String cookiesToString(Map<String, String> cookies) {
