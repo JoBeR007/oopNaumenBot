@@ -60,7 +60,7 @@ public class NyaParser {
 
     private Torrent extractTorrentFromElement(Element element) {
         log.info("Extracting Torrent info from Element: {}", element.text());
-        String category = element.select("a").attr("href");
+        String category = element.select("a").get(0).attr("title");
         String name = element.select("a").get(1).text();
         String sizeText = element.getElementsByClass("text-center").get(1).text();
         String downloadLink = NyaSettings.TRACKER_URL + element.getElementsByClass("text-center").select("a").get(0).attr("href").substring(1);
