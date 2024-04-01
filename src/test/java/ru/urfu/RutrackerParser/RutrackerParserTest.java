@@ -32,4 +32,11 @@ public class RutrackerParserTest {
 
         Assertions.assertEquals(expected, actual);
     }
+
+    @Test
+    public void testSearchNotNull(){
+        String request = "dune";
+        List<Torrent> answer = rutrackerParser.search(request);
+        Assertions.assertTrue(answer.size() > 0);
+    }
 }
