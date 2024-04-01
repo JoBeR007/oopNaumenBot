@@ -47,8 +47,8 @@ public class RutrackerLogin {
         return instance;
     }
 
-    public void login() {
-        Connection.Response res = null;
+    public boolean login() {
+        Connection.Response res;
         try {
             res = Jsoup.connect(RutrackerSettings.LOGIN_URL)
                     .data("login_username", trackerLogin,
@@ -57,23 +57,23 @@ public class RutrackerLogin {
                     .execute();
         } catch (Exception e) {
             log.warn("Unable to login to Rutracker.org: {}", e.getLocalizedMessage());
+            return false;
         }
 
-        if (res != null && res.statusCode() == 200) {
-            if (res.cookies().size() > 0) {
-                cookies = res.cookies();
-                authenticated = true;
-                cookiesDate = new Date();
-                log.info("Authenticated, cookies loaded");
-            }
+        if (res.statusCode() == 200 && res.cookies().size() > 0) {
+            cookies = res.cookies();
+            authenticated = true;
+            cookiesDate = new Date();
+            log.info("Authenticated, cookies loaded");
+            return true;
         }
-
+        return false;
     }
 
     public boolean isAuthenticated() {
         if (cookiesDate != null && authenticated) {
             if (Duration.between(new Date().toInstant(), cookiesDate.toInstant()).toDays() > 2) {
-                login();
+                authenticated = false;
             }
         }
 
