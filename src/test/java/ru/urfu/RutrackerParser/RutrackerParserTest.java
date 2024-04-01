@@ -2,6 +2,9 @@ package ru.urfu.RutrackerParser;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.urfu.model.Torrent;
+
+import java.util.List;
 
 public class RutrackerParserTest {
     private final RutrackerParser rutrackerParser = RutrackerParser.getInstance();
