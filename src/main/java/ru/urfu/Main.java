@@ -1,30 +1,37 @@
 package ru.urfu;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.urfu.NyaParser.NyaParser;
-import ru.urfu.RutrackerParser.RutrackerParser;
-import ru.urfu.TorrentFileDownloader.TorrentFileDownloader;
-import ru.urfu.model.Torrent;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-import java.util.List;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 @Slf4j
 public class Main {
-    public static void main(String[] args) {
-        RutrackerParser rp = RutrackerParser.getInstance();
-        List<Torrent> res = rp.search("dune");
-        for(Torrent  t: res) {
-            System.out.println(t);
-        }
-        TorrentFileDownloader tfd = new TorrentFileDownloader();
+    // private static final Map<String, String> envParams = System.getenv();
 
-        NyaParser np = NyaParser.getInstance();
-        List<Torrent> anime = np.search("naruto");
-        for(Torrent t: anime) {
-            System.out.println(t);
+    public static void main(String [] args) throws TelegramApiException {
+        String botToken = "";
+        String botName = "";
+        try {
+            Properties prop = new Properties();
+            InputStream input = new FileInputStream("src/main/resources/application.properties");
+            prop.load(input);
+            botToken = prop.getProperty("bot.token");
+            botName = prop.getProperty("bot.name");
+        } catch (FileNotFoundException e) {
+            log.error("No properties file with necessary data: {}", e.getLocalizedMessage());
+        } catch (IOException e) {
+            log.error("Properties file is poorly structured or does not contain required data: {}",
+                    e.getLocalizedMessage());
         }
-        System.out.println(tfd.downloadTorrentFile(res.get(0).getTorrentDownloadLink(), true));
-        System.out.println(tfd.downloadTorrentFile(anime.get(0).getTorrentDownloadLink(), false));
 
+        TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+        telegramBotsApi.registerBot(new Bot(botName, botToken));
     }
 }
