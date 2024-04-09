@@ -2,11 +2,11 @@ package ru.urfu;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageCaption;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -16,9 +16,7 @@ import ru.urfu.handlers.*;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class Bot extends TelegramLongPollingBot {
     List<UpdateHandler> handlers = new ArrayList<>();
@@ -67,10 +65,11 @@ public class Bot extends TelegramLongPollingBot {
 
         SendMessage messageText = message.getOutputText();
         SendPhoto messagePhoto = message.getOutputPhoto();
+        SendDocument messageDocument = message.getOutputDocument();
         EditMessageText editText = message.getOutputEditText();
         EditMessageCaption editCaption = message.getOutputEditCaption();
 
-        if (messageText == null && messagePhoto == null && editText == null && editCaption == null) {
+        if (messageText == null && messagePhoto == null && messageDocument == null && editText == null && editCaption == null) {
             return;
         }
 
@@ -79,6 +78,10 @@ public class Bot extends TelegramLongPollingBot {
                 execute(messageText);
             if (messagePhoto.getPhoto() != null)
                 execute(messagePhoto);
+            if (messageDocument.getDocument() != null) {
+                execute(messageDocument);
+                deleteTorrentFile();
+            }
             if (editText.getText()!= null)
                 execute(editText);
             if (editCaption.getCaption()!= null)
@@ -97,5 +100,26 @@ public class Bot extends TelegramLongPollingBot {
         Date date = new Date();
 
         return "Received message from @" +  userName + ", id = " + userID + " at " + dateFormat.format(date);
+    }
+
+    private static void deleteTorrentFile() {
+        File mainFolder = new File(".");
+        File[] files = mainFolder.listFiles();
+
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile() && file.getName().endsWith(".torrent")) {
+                    if (file.delete()) {
+                        LOG.info("Удален файл: " + file.getName());
+                    } else {
+                        LOG.info("Не удалось удалить файл: " + file.getName());
+                    }
+                }
+            }
+        }
+
+        else {
+            LOG.info("В директории нет файлов.");
+        }
     }
 }

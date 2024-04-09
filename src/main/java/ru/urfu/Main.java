@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 
 @Slf4j
@@ -16,8 +17,8 @@ public class Main {
     // private static final Map<String, String> envParams = System.getenv();
 
     public static void main(String [] args) throws TelegramApiException {
-        String botToken = "";
-        String botName = "";
+        String botToken;
+        String botName;
         try {
             Properties prop = new Properties();
             InputStream input = new FileInputStream("src/main/resources/application.properties");
@@ -32,6 +33,6 @@ public class Main {
         }
 
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-        telegramBotsApi.registerBot(new Bot(botName, botToken));
+        telegramBotsApi.registerBot(new Bot("moais_torrent_bot", "6921913547:AAG7dJLfOvlRZmMUyDZeofd2YT7zfjM8VGY"));
     }
 }

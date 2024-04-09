@@ -6,18 +6,27 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageCaption;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.*;
+import static ru.urfu.Bot.*;
+
+import ru.urfu.NyaParser.NyaParser;
+import ru.urfu.RutrackerParser.RutrackerParser;
 import ru.urfu.botObjects.BotRequest;
 import ru.urfu.botObjects.BotResponse;
+import ru.urfu.model.Torrent;
+
 import static ru.urfu.messageComposers.ResponseConstants.*;
-import static ru.urfu.messageComposers.Constants.*;
+
 
 import java.lang.*;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+
 
 public class Handler {
 
-    private final MessageComposer mc = new MessageComposer();
+    private final MessageComposer messageComposer = new MessageComposer();
 
     public BotResponse distribute(BotRequest request) throws IOException {
         SendMessage textResponse = new SendMessage();
@@ -48,7 +57,8 @@ public class Handler {
         }
 
         else if (callbackQuery != null) {
-            setNewContentToMessage(callbackQuery, editTextResponse);
+            //setNewContentToMessage(callbackQuery, editTextResponse);
+            messageComposer.getTorrentInformation(documentResponse, callbackQuery, textResponse);
         }
 
         return new BotResponse(textResponse, photoResponse, documentResponse, editTextResponse, editCaptionResponse);
@@ -58,30 +68,25 @@ public class Handler {
         String callData = callbackQuery.getData();
         String messageId = Integer.toString(callbackQuery.getMessage().getMessageId());
 
-        if (callData.equals("next")) {
-            editTextResponse.setMessageId(Integer.parseInt(messageId));
-            editTextResponse.setText("Следующая страница");
-        }
-
-        else if (callData.equals("previous")) {
-            editTextResponse.setMessageId(Integer.parseInt(messageId));
-            editTextResponse.setText("Предыдущая страница");
-        }
     }
 
+
     private void handleText (SendMessage textResponse, BotRequest request) throws IOException {
+        //default -> textResponse.setText("Не понимаю, чего ты хочешь. Чтобы посмотреть список доступных команд, отправь /help.");
         switch (request.getInputText()) {
             case "/start" -> textResponse.setText(HELLO.getContent());
 
             case "/help" -> textResponse.setText(HELP.getContent());
 
-            case "/rutracker" -> textResponse.setText(RUTRACKER.getContent());
+            case "/rt" -> {
+                textResponse.setText(RUTRACKER.getContent());
+            }
 
-            case "/nyaa" -> textResponse.setText(NYAA.getContent());
+            case "/nya" -> {
+                textResponse.setText(NYAA.getContent());
+            }
 
-            default -> mc.getInformation(textResponse, request);
-
-            //default -> textResponse.setText("Не понимаю, чего ты хочешь. Чтобы посмотреть список доступных команд, отправь /help.");
+            default -> messageComposer.getTorrentListMessage(textResponse, request);
         }
     }
 }
