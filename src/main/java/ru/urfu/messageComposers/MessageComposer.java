@@ -30,17 +30,16 @@ public class MessageComposer {
 
         if (requestText.startsWith(RUTRACKER_MODE.getContent())) {
             requestText = requestText.replaceFirst(RUTRACKER_MODE.getContent(), "");
-
             torrents = RutrackerParser.getInstance().search(requestText);
             ArrayList<Torrent> torrentsArrayList = new ArrayList(Arrays.asList(torrents));
-
             LastTorrentList.getInstance().setList(torrentsArrayList);
         }
 
         else if (requestText.startsWith(NYAA_MODE.getContent())) {
             requestText = requestText.replaceFirst(NYAA_MODE.getContent(), "");
             torrents = NyaParser.getInstance().search(requestText);
-            LastTorrentList.getInstance().setList((ArrayList<Torrent>) torrents);
+            ArrayList<Torrent> torrentsArrayList = new ArrayList(Arrays.asList(torrents));
+            LastTorrentList.getInstance().setList(torrentsArrayList);
         }
 
         else {

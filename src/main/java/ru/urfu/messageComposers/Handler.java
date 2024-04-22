@@ -6,21 +6,16 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageCaption;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.*;
-import static ru.urfu.Bot.*;
 
-import ru.urfu.NyaParser.NyaParser;
-import ru.urfu.RutrackerParser.RutrackerParser;
 import ru.urfu.botObjects.BotRequest;
 import ru.urfu.botObjects.BotResponse;
-import ru.urfu.model.Torrent;
 
 import static ru.urfu.messageComposers.ResponseConstants.*;
 
 
 import java.lang.*;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.util.List;
 
 
@@ -64,12 +59,11 @@ public class Handler {
         return new BotResponse(textResponse, photoResponse, documentResponse, editTextResponse, editCaptionResponse);
     }
 
-    private void setNewContentToMessage (CallbackQuery callbackQuery, EditMessageText editTextResponse){
-        String callData = callbackQuery.getData();
-        String messageId = Integer.toString(callbackQuery.getMessage().getMessageId());
-
-    }
-
+//    private void setNewContentToMessage (CallbackQuery callbackQuery, EditMessageText editTextResponse){
+//        String callData = callbackQuery.getData();
+//        String messageId = Integer.toString(callbackQuery.getMessage().getMessageId());
+//
+//    }
 
     private void handleText (SendMessage textResponse, BotRequest request) throws IOException {
         //default -> textResponse.setText("Не понимаю, чего ты хочешь. Чтобы посмотреть список доступных команд, отправь /help.");
