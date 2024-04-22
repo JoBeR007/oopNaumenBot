@@ -9,7 +9,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 import java.util.Properties;
 
 @Slf4j
@@ -25,14 +24,18 @@ public class Main {
             prop.load(input);
             botToken = prop.getProperty("bot.token");
             botName = prop.getProperty("bot.name");
-        } catch (FileNotFoundException e) {
+
+            TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+            telegramBotsApi.registerBot(new Bot(botName, botToken));
+        }
+        catch (FileNotFoundException e) {
+
             log.error("No properties file with necessary data: {}", e.getLocalizedMessage());
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
+
             log.error("Properties file is poorly structured or does not contain required data: {}",
                     e.getLocalizedMessage());
         }
-
-        TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-        telegramBotsApi.registerBot(new Bot("moais_torrent_bot", "6921913547:AAG7dJLfOvlRZmMUyDZeofd2YT7zfjM8VGY"));
     }
 }
